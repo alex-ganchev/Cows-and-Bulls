@@ -43,6 +43,22 @@ public class Main {
         cowsBulls[1] = countBulls;
         return cowsBulls;
     }
+    public static boolean validateWin (int[] cowsBulls, int digits){
+        if (cowsBulls[1] == digits){
+            System.out.println("Честито! Познахте числото.");
+            return true;
+        }else{
+            if (cowsBulls[0] != 0){
+                System.out.print(cowsBulls[0] + (cowsBulls[0] == 1 ? " крава" : " крави"));
+            }if (cowsBulls[0] != 0 && cowsBulls[1] != 0){
+                System.out.print(" и ");
+            }if (cowsBulls[1] != 0) {
+                System.out.print(cowsBulls[1] + (cowsBulls[1] == 1 ? " бик" : " бика"));
+            }
+            System.out.println();
+        }
+        return false;
+    }
 
     public static void printArray(int[] array){
         for (int i = 0; i < array.length; i++) {
@@ -51,15 +67,15 @@ public class Main {
     }
     public static void main(String[] args) {
         Scanner scanner  = new Scanner(System.in);
-        int[] randomNumber = generateRandomNumber(4);
+        int digits = 4;
+        int[] randomNumber = generateRandomNumber(digits);
         int[] cowsBulls = new int[2];
-        printArray(randomNumber);
-        System.out.println();
-        while (cowsBulls[1] != 4) {
+       // printArray(randomNumber);
+        do {
         System.out.print("Въведете число: ");
         int inputNumber = scanner.nextInt();
         cowsBulls = checkCowsAndBulls(inputNumber, randomNumber);
-        System.out.println(inputNumber + " - " + cowsBulls[0] + (cowsBulls[0] == 1 ? " крава" : " крави") + " и " + cowsBulls[1] + (cowsBulls[1] == 1 ? " бик" : " бика"));
-        }
+       // System.out.println(inputNumber + " - " + cowsBulls[0] + (cowsBulls[0] == 1 ? " крава" : " крави") + " и " + cowsBulls[1] + (cowsBulls[1] == 1 ? " бик" : " бика"));
+        } while (!validateWin(cowsBulls, digits));
     }
 }
