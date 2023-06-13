@@ -17,54 +17,79 @@ public class Main {
         return randomNumberList;
     }
 
-    public static int[] checkCowsAndBulls(int inputNumber, ArrayList<Integer> randomNumber) {
-        int size = randomNumber.size();
-        int[] arrayInputNumber = new int[size];
-        int k = size - 1;
-
-        while (inputNumber > 0) {
-            int temp = inputNumber % 10;
-            arrayInputNumber[k] = temp;
-            inputNumber = inputNumber / 10;
-            k--;
+    public static boolean validateInput(String inputNumber, int digits) {
+        try {
+            Integer.parseInt(inputNumber);
+        } catch (NumberFormatException e) {
+        }
+        if (inputNumber.length() != digits) {
+            return false;
+        }
+        for (int i = 0; i < inputNumber.length() - 1; i++) {
+            for (int j = i + 1; j < inputNumber.length(); j++) {
+                if (inputNumber.charAt(i) == inputNumber.charAt(j)) {
+                    return false;
+                }
+            }
         }
 
+        return true;
+    }
+
+    public static ArrayList<Integer> convertIntToArrayList(int inputNumber) {
+        ArrayList<Integer> inputNumberList = new ArrayList<>();
+        do {
+            inputNumberList.add(inputNumber % 10);
+            inputNumber /= 10;
+        } while (inputNumber > 0);
+        Collections.reverse(inputNumberList);
+
+        return inputNumberList;
+    }
+
+    public static int countCows(ArrayList<Integer> inputNumberList, ArrayList<Integer> randomNumberList) {
         int countCows = 0;
-        int countBulls = 0;
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < arrayInputNumber.length; j++) {
-                if (arrayInputNumber[j] == randomNumber.get(i) && j != i) {
+        for (int i = 0; i < inputNumberList.size(); i++) {
+            for (int j = 0; j < randomNumberList.size(); j++) {
+                if (inputNumberList.get(i).equals(randomNumberList.get(j)) && i != j) {
                     countCows++;
                 }
             }
-            if (arrayInputNumber[i] == randomNumber.get(i)) {
+        }
+
+        return countCows;
+    }
+
+    public static int countBulls(ArrayList<Integer> inputNumberList, ArrayList<Integer> randomNumberList) {
+        int countBulls = 0;
+        for (int i = 0; i < inputNumberList.size(); i++) {
+            if (inputNumberList.get(i).equals(randomNumberList.get(i))) {
                 countBulls++;
             }
         }
 
-        int[] cowsBulls = new int[2];
-        cowsBulls[0] = countCows;
-        cowsBulls[1] = countBulls;
-
-        return cowsBulls;
+        return countBulls;
     }
 
-    public static boolean validateWin(int[] cowsBulls, int digits) {
-        if (cowsBulls[1] == digits) {
+    public static boolean printOutput(int inputNumber, ArrayList<Integer> randomNumber) {
+        int cows = countCows(convertIntToArrayList(inputNumber), randomNumber);
+        int bulls = countBulls(convertIntToArrayList(inputNumber), randomNumber);
+        int digits = randomNumber.size();
+        if (bulls == digits) {
             System.out.println("Честито! Познахте числото.");
             return true;
         } else {
-            if (cowsBulls[0] != 0) {
-                System.out.print(cowsBulls[0] + (cowsBulls[0] == 1 ? " крава" : " крави"));
+            if (cows != 0) {
+                System.out.print(cows + (cows == 1 ? " крава" : " крави"));
             }
-            if (cowsBulls[0] != 0 && cowsBulls[1] != 0) {
+            if (cows != 0 && bulls != 0) {
                 System.out.print(" и ");
             }
-            if (cowsBulls[0] == 0 && cowsBulls[1] == 0) {
+            if (cows == 0 && bulls == 0) {
                 System.out.print("Няма съвпадения.");
             }
-            if (cowsBulls[1] != 0) {
-                System.out.print(cowsBulls[1] + (cowsBulls[1] == 1 ? " бик" : " бика"));
+            if (bulls != 0) {
+                System.out.print(bulls + (bulls == 1 ? " бик" : " бика"));
             }
             System.out.println();
         }
@@ -78,43 +103,23 @@ public class Main {
         }
     }
 
-    public static boolean validateInput(String inputNumber, int digits) {
-        try {
-            Integer.parseInt(inputNumber);
-        } catch (Exception e) {
-        }
-        if (inputNumber.length() != digits) {
-            return false;
-        } else {
-            for (int i = 0; i < inputNumber.length() - 1; i++) {
-                for (int j = i + 1; j < inputNumber.length(); j++) {
-                    if (inputNumber.charAt(i) == inputNumber.charAt(j)) {
-                        return false;
-                    }
-                }
-            }
-        }
-        return true;
-    }
-
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         int digits = 4;
         ArrayList<Integer> randomNumber = generateRandomNumber(digits);
-        int[] cowsBulls = {0, 0};
-        String inputNumber;
         printArrayList(randomNumber);
         System.out.println();
+        String input;
+        boolean end = false;
         do {
             System.out.print("Въведете число: ");
-            inputNumber = scanner.next();
-            if (validateInput(inputNumber, digits)) {
-                int i = Integer.parseInt(inputNumber);
-                cowsBulls = checkCowsAndBulls(i, randomNumber);
-                validateWin(cowsBulls, digits);
+            input = scanner.nextLine();
+            if (validateInput(input, digits)) {
+                int inputNumber = Integer.parseInt(input);
+                end = printOutput(inputNumber, randomNumber);
             } else {
                 System.out.println("Въведете валидно число!");
             }
-        } while (cowsBulls[1] != digits);
+        } while (!end);
     }
 }
