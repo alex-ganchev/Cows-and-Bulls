@@ -1,4 +1,6 @@
+
 import java.util.*;
+
 
 public class Main {
     public static ArrayList<Integer> generateRandomNumber(int digits) {
@@ -107,15 +109,69 @@ public class Main {
         }
     }
 
-    public static void main(String[] args) {
+    public static void menuChoice() {
         Scanner scanner = new Scanner(System.in);
-        int digits = 4;
+        System.out.println("---------- МЕНЮ ----------");
+        System.out.println("| 1. Игра с един играч   |");
+        System.out.println("| 2. Игра с двама играча |");
+        System.out.println("| 3. Класация            |");
+        System.out.println("| 4. Изход               |");
+        System.out.println("--------------------------");
+        System.out.print("Вашият избор : ");
+        String choice = scanner.next();
+        switch (choice) {
+            case "1": {
+                System.out.println("Вие избрахте \"Игра с един играч\".");
+                playSinglePlayer();
+                break;
+            }
+//          case "2" :break;
+//          case "3" :break;
+            case "4": {
+                System.out.println("Вие избрахте \"Изход\".");
+                break;
+            }
+            default: {
+                System.out.println("Моля изберете валидна опция от менюто.");
+                menuChoice();
+                break;
+            }
+        }
+
+    }
+
+    public static int difficultyChoice() {
+        Scanner scanner = new Scanner(System.in);
+        int digits = 0;
+        String input;
+        do {
+            System.out.print("Въведете трудност от 1 до 9 (брой разряди на числото) : ");
+            try {
+                input = scanner.nextLine();
+                digits = Integer.parseInt(input);
+                if (digits < 1 || digits > 9) {
+                    throw new Exception();
+                }
+            } catch (Exception e) {
+                System.out.println("Моля въведете валидна стойност!");
+            }
+        }
+        while (digits < 1 || digits > 9);
+        return digits;
+    }
+
+    public static void playSinglePlayer() {
+        Scanner scanner = new Scanner(System.in);
+        int digits = difficultyChoice();
+        System.out.print("Въведете име на играча : ");
+        String playerName = scanner.nextLine();
         ArrayList<Integer> randomNumberList = generateRandomNumber(digits);
         printArrayList(randomNumberList);
         System.out.println();
         int bulls = 0;
+        int countTurn = 0;
         do {
-            System.out.print("Въведете число: ");
+            System.out.print(playerName + " въведи число: ");
             String input = scanner.nextLine();
             if (validateInput(input, digits)) {
                 int inputNumber = Integer.parseInt(input);
@@ -123,7 +179,14 @@ public class Main {
                 int cows = countCows(inputNumberList, randomNumberList);
                 bulls = countBulls(inputNumberList, randomNumberList);
                 printOutput(cows, bulls);
+                countTurn++;
             }
         } while (bulls != digits);
+        System.out.println("Поздравления " + playerName + "! Позна числото в " + countTurn + (countTurn == 1 ? " ход." : " хода."));
+        menuChoice();
+    }
+
+    public static void main(String[] args) {
+        menuChoice();
     }
 }
