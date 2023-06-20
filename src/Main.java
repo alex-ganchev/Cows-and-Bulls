@@ -122,7 +122,9 @@ public class Main {
         switch (choice) {
             case "1": {
                 System.out.println("Вие избрахте \"Игра с един играч\".");
-                playSinglePlayer();
+                int digits = difficultyChoice();
+                String playerName = inputPlayerName();
+                playSinglePlayer(playerName, digits);
                 break;
             }
 //          case "2" :break;
@@ -140,6 +142,34 @@ public class Main {
 
     }
 
+    public static void secondMenuChoice(String playerName, int digits) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("------ МЕНЮ ------");
+        System.out.println("| 1. Нова игра   |");
+        System.out.println("| 2. Главно меню |");
+        System.out.println("------------------");
+        System.out.print("Вашият избор : ");
+        String choice = scanner.next();
+        switch (choice) {
+            case "1": {
+                System.out.println("Вие избрахте \"Нова игра\".");
+                playSinglePlayer(playerName, digits);
+                break;
+            }
+             case "2" :{
+                 System.out.println("Вие избрахте \"Главно меню\".");
+                 menuChoice();
+                 break;
+             }
+            default: {
+                System.out.println("Моля изберете валидна опция от менюто.");
+                secondMenuChoice(playerName, digits);
+                break;
+            }
+        }
+
+    }
+
     public static int difficultyChoice() {
         Scanner scanner = new Scanner(System.in);
         int digits = 0;
@@ -149,6 +179,7 @@ public class Main {
             try {
                 input = scanner.nextLine();
                 digits = Integer.parseInt(input);
+
                 if (digits < 1 || digits > 9) {
                     throw new Exception();
                 }
@@ -157,14 +188,20 @@ public class Main {
             }
         }
         while (digits < 1 || digits > 9);
+
         return digits;
     }
 
-    public static void playSinglePlayer() {
+    public static String inputPlayerName (){
         Scanner scanner = new Scanner(System.in);
-        int digits = difficultyChoice();
         System.out.print("Въведете име на играча : ");
         String playerName = scanner.nextLine();
+
+        return playerName;
+    }
+
+    public static void playSinglePlayer(String playerName, int digits) {
+        Scanner scanner = new Scanner(System.in);
         ArrayList<Integer> randomNumberList = generateRandomNumber(digits);
         printArrayList(randomNumberList);
         System.out.println();
@@ -183,7 +220,7 @@ public class Main {
             }
         } while (bulls != digits);
         System.out.println("Поздравления " + playerName + "! Позна числото в " + countTurn + (countTurn == 1 ? " ход." : " хода."));
-        menuChoice();
+        secondMenuChoice(playerName,digits);
     }
 
     public static void main(String[] args) {
