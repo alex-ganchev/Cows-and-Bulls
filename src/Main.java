@@ -127,7 +127,14 @@ public class Main {
                 playSinglePlayer(playerName, digits);
                 break;
             }
-//          case "2" :break;
+            case "2": {
+                System.out.println("Вие избрахте \"Игра с двама играча\".");
+                int digits = difficultyChoice();
+                String firstPlayerName = inputPlayerName();
+                String secondPlayerName = inputPlayerName();
+                playMultiPlayer(firstPlayerName, secondPlayerName, digits);
+                break;
+            }
 //          case "3" :break;
             case "4": {
                 System.out.println("Вие избрахте \"Изход\".");
@@ -142,7 +149,7 @@ public class Main {
 
     }
 
-    public static void secondMenuChoice(String playerName, int digits) {
+    public static void secondMenuChoice(String firstPlayerName, String secondPlayerName, int digits) {
         Scanner scanner = new Scanner(System.in);
         System.out.println("------ МЕНЮ ------");
         System.out.println("| 1. Нова игра   |");
@@ -153,17 +160,21 @@ public class Main {
         switch (choice) {
             case "1": {
                 System.out.println("Вие избрахте \"Нова игра\".");
-                playSinglePlayer(playerName, digits);
+                if (secondPlayerName == null) {
+                    playSinglePlayer(firstPlayerName, digits);
+                }else {
+                   playMultiPlayer(firstPlayerName, secondPlayerName, digits);
+                }
                 break;
             }
-             case "2" :{
-                 System.out.println("Вие избрахте \"Главно меню\".");
-                 menuChoice();
-                 break;
-             }
+            case "2": {
+                System.out.println("Вие избрахте \"Главно меню\".");
+                menuChoice();
+                break;
+            }
             default: {
                 System.out.println("Моля изберете валидна опция от менюто.");
-                secondMenuChoice(playerName, digits);
+                secondMenuChoice(firstPlayerName, secondPlayerName, digits);
                 break;
             }
         }
@@ -192,12 +203,11 @@ public class Main {
         return digits;
     }
 
-    public static String inputPlayerName (){
+    public static String inputPlayerName() {
         Scanner scanner = new Scanner(System.in);
         System.out.print("Въведете име на играча : ");
-        String playerName = scanner.nextLine();
 
-        return playerName;
+        return scanner.nextLine();
     }
 
     public static void playSinglePlayer(String playerName, int digits) {
@@ -220,7 +230,44 @@ public class Main {
             }
         } while (bulls != digits);
         System.out.println("Поздравления " + playerName + "! Позна числото в " + countTurn + (countTurn == 1 ? " ход." : " хода."));
-        secondMenuChoice(playerName,digits);
+        secondMenuChoice(playerName, null, digits);
+    }
+
+    public static void playMultiPlayer(String firstPlayerName, String secondPlayerName, int digits) {
+        Scanner scanner = new Scanner(System.in);
+        ArrayList<Integer> firstRandomNumberList = generateRandomNumber(digits);
+        ArrayList<Integer> secondRandomNumberList = generateRandomNumber(digits);
+        printArrayList(firstRandomNumberList);
+        printArrayList(secondRandomNumberList);
+        System.out.println();
+        int bulls = 0;
+        int countTurn = 0;
+        String playerNameOnTurn = firstPlayerName;
+        ArrayList<Integer> randomNumberListOnTurn = firstRandomNumberList;
+        do {
+            System.out.print(playerNameOnTurn + " въведи число: ");
+            String input = scanner.nextLine();
+            if (validateInput(input, digits)) {
+                int inputNumber = Integer.parseInt(input);
+                ArrayList<Integer> inputNumberList = convertIntToArrayList(inputNumber);
+                int cows = countCows(inputNumberList, randomNumberListOnTurn);
+                bulls = countBulls(inputNumberList, randomNumberListOnTurn);
+                printOutput(cows, bulls);
+                countTurn++;
+                System.out.println(countTurn);
+                if (playerNameOnTurn.equals(firstPlayerName) && bulls != digits) {
+                    playerNameOnTurn = secondPlayerName;
+                    randomNumberListOnTurn = secondRandomNumberList;
+                } else if (playerNameOnTurn.equals(secondPlayerName) && bulls != digits) {
+                    playerNameOnTurn = firstPlayerName;
+                    randomNumberListOnTurn = firstRandomNumberList;
+                }
+            }
+
+        } while (bulls != digits);
+        countTurn = (int)Math.ceil(countTurn/2.0);
+        System.out.println("Поздравления " + playerNameOnTurn + "! Позна числото в " + countTurn + (countTurn == 1 ? " ход." : " хода."));
+        secondMenuChoice(firstPlayerName, secondPlayerName, digits);
     }
 
     public static void main(String[] args) {
