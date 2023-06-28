@@ -1,5 +1,6 @@
 
 import java.util.*;
+import java.io.File;
 
 
 public class Main {
@@ -135,7 +136,11 @@ public class Main {
                 playMultiPlayer(firstPlayerName, secondPlayerName, digits);
                 break;
             }
-//          case "3" :break;
+            case "3": {
+                System.out.println("Вие избрахте \"Класация\".");
+                printRanking();
+                break;
+            }
             case "4": {
                 System.out.println("Вие избрахте \"Изход\".");
                 break;
@@ -162,8 +167,8 @@ public class Main {
                 System.out.println("Вие избрахте \"Нова игра\".");
                 if (secondPlayerName == null) {
                     playSinglePlayer(firstPlayerName, digits);
-                }else {
-                   playMultiPlayer(firstPlayerName, secondPlayerName, digits);
+                } else {
+                    playMultiPlayer(firstPlayerName, secondPlayerName, digits);
                 }
                 break;
             }
@@ -254,7 +259,6 @@ public class Main {
                 bulls = countBulls(inputNumberList, randomNumberListOnTurn);
                 printOutput(cows, bulls);
                 countTurn++;
-                System.out.println(countTurn);
                 if (playerNameOnTurn.equals(firstPlayerName) && bulls != digits) {
                     playerNameOnTurn = secondPlayerName;
                     randomNumberListOnTurn = secondRandomNumberList;
@@ -265,9 +269,31 @@ public class Main {
             }
 
         } while (bulls != digits);
-        countTurn = (int)Math.ceil(countTurn/2.0);
+        countTurn = (int) Math.ceil(countTurn / 2.0);
         System.out.println("Поздравления " + playerNameOnTurn + "! Позна числото в " + countTurn + (countTurn == 1 ? " ход." : " хода."));
         secondMenuChoice(firstPlayerName, secondPlayerName, digits);
+    }
+
+    public static void printRanking() {
+        File file = new File("ranking.csv");
+        try {
+            Scanner sc = new Scanner(file, "windows-1251");
+            System.out.println("----------------------------------");
+            System.out.println("| Трудност |  Ходове  |   Име    |");
+            System.out.println("----------------------------------");
+            while (sc.hasNext()) {
+                String[] splitText = sc.nextLine().split(";");
+                for (int i = 0; i < splitText.length; i++) {
+                    System.out.printf("%-11s", "| " + splitText[i] + " ");
+                }
+                System.out.println("|");
+            }
+            System.out.println("----------------------------------");
+            sc.close();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        menuChoice();
     }
 
     public static void main(String[] args) {
