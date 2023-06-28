@@ -1,4 +1,5 @@
 
+import java.io.PrintStream;
 import java.util.*;
 import java.io.File;
 
@@ -221,7 +222,7 @@ public class Main {
         printArrayList(randomNumberList);
         System.out.println();
         int bulls = 0;
-        int countTurn = 0;
+        int countTurns = 0;
         do {
             System.out.print(playerName + " въведи число: ");
             String input = scanner.nextLine();
@@ -231,10 +232,11 @@ public class Main {
                 int cows = countCows(inputNumberList, randomNumberList);
                 bulls = countBulls(inputNumberList, randomNumberList);
                 printOutput(cows, bulls);
-                countTurn++;
+                countTurns++;
             }
         } while (bulls != digits);
-        System.out.println("Поздравления " + playerName + "! Позна числото в " + countTurn + (countTurn == 1 ? " ход." : " хода."));
+        System.out.println("Поздравления " + playerName + "! Позна числото в " + countTurns + (countTurns == 1 ? " ход." : " хода."));
+        validateRanking(digits,countTurns,playerName);
         secondMenuChoice(playerName, null, digits);
     }
 
@@ -246,7 +248,7 @@ public class Main {
         printArrayList(secondRandomNumberList);
         System.out.println();
         int bulls = 0;
-        int countTurn = 0;
+        int countTurns = 0;
         String playerNameOnTurn = firstPlayerName;
         ArrayList<Integer> randomNumberListOnTurn = firstRandomNumberList;
         do {
@@ -258,7 +260,7 @@ public class Main {
                 int cows = countCows(inputNumberList, randomNumberListOnTurn);
                 bulls = countBulls(inputNumberList, randomNumberListOnTurn);
                 printOutput(cows, bulls);
-                countTurn++;
+                countTurns++;
                 if (playerNameOnTurn.equals(firstPlayerName) && bulls != digits) {
                     playerNameOnTurn = secondPlayerName;
                     randomNumberListOnTurn = secondRandomNumberList;
@@ -269,8 +271,9 @@ public class Main {
             }
 
         } while (bulls != digits);
-        countTurn = (int) Math.ceil(countTurn / 2.0);
-        System.out.println("Поздравления " + playerNameOnTurn + "! Позна числото в " + countTurn + (countTurn == 1 ? " ход." : " хода."));
+        countTurns = (int) Math.ceil(countTurns / 2.0);
+        System.out.println("Поздравления " + playerNameOnTurn + "! Позна числото в " + countTurns + (countTurns == 1 ? " ход." : " хода."));
+        validateRanking(digits,countTurns,playerNameOnTurn);
         secondMenuChoice(firstPlayerName, secondPlayerName, digits);
     }
 
@@ -294,6 +297,39 @@ public class Main {
             System.out.println(e.getMessage());
         }
         menuChoice();
+    }
+
+    public static void validateRanking(int digits, int countTurns, String playerName){
+        File file = new File("ranking.csv");
+        String[][] ranking = new String[9][3];
+        int i = 0;
+        try {
+            Scanner sc = new Scanner(file, "windows-1251");
+            while (sc.hasNext()) {
+                String[] splitCsv = sc.nextLine().split(";");
+                for (int j = 0; j < splitCsv.length; j++) {
+                    ranking[i][j] = splitCsv[j];
+                }
+                if (Integer.parseInt(ranking[i][0]) == digits && Integer.parseInt(ranking[i][1]) > countTurns){
+                    System.out.println("Подобрихте предишното най-добро постижение на " + ranking[i][2] + ".");
+                    ranking[i][1] = countTurns + "";
+                    ranking[i][2] = playerName;
+                }
+                i++;
+            }
+            sc.close();
+            PrintStream ps = new PrintStream(file, "windows-1251");
+            for (int k = 0; k < ranking.length; k++) {
+                for (int j = 0; j < ranking[0].length; j++) {
+                    ps.print(ranking[k][j]);
+                    ps.print(";");
+                }
+                ps.println();
+            }
+            ps.close();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     public static void main(String[] args) {
