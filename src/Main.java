@@ -30,7 +30,6 @@ public class Main {
             return false;
         }
         if (inputNumber.length() != digits) {
-            System.out.print("Въведохте число с " + inputNumber.length() + (inputNumber.length() == 1 ? " цифрa." : " цифри. "));
             System.out.println("Моля въведете число с " + digits + (digits == 1 ? " цифрa." : " цифри."));
 
             return false;
@@ -43,7 +42,7 @@ public class Main {
         for (int i = 0; i < inputNumber.length() - 1; i++) {
             for (int j = i + 1; j < inputNumber.length(); j++) {
                 if (inputNumber.charAt(i) == inputNumber.charAt(j)) {
-                    System.out.println("Моля въведете число с неповтарящи се цифри.");
+                    System.out.println("Моля въведете число с " + digits + " неповтарящи се цифри.");
 
                     return false;
                 }
@@ -115,7 +114,7 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
         System.out.println("---------- МЕНЮ ----------");
         System.out.println("| 1. Игра с един играч   |");
-        System.out.println("| 2. Игра с двама играча |");
+        System.out.println("| 2. Игра с двама играчи |");
         System.out.println("| 3. Класация            |");
         System.out.println("| 4. Изход               |");
         System.out.println("--------------------------");
@@ -130,7 +129,7 @@ public class Main {
                 break;
             }
             case "2": {
-                System.out.println("Вие избрахте \"Игра с двама играча\".");
+                System.out.println("Вие избрахте \"Игра с двама играчи\".");
                 int digits = difficultyChoice();
                 String firstPlayerName = inputPlayerName();
                 String secondPlayerName = inputPlayerName();
@@ -212,8 +211,7 @@ public class Main {
     public static String inputPlayerName() {
         Scanner scanner = new Scanner(System.in);
         System.out.print("Въведете име на играча : ");
-
-        return scanner.nextLine();
+        return scanner.next();
     }
 
     public static void playSinglePlayer(String playerName, int digits) {
@@ -236,7 +234,7 @@ public class Main {
             }
         } while (bulls != digits);
         System.out.println("Поздравления " + playerName + "! Позна числото в " + countTurns + (countTurns == 1 ? " ход." : " хода."));
-        validateRanking(digits,countTurns,playerName);
+        validateRanking(playerName, countTurns, digits);
         secondMenuChoice(playerName, null, digits);
     }
 
@@ -273,7 +271,7 @@ public class Main {
         } while (bulls != digits);
         countTurns = (int) Math.ceil(countTurns / 2.0);
         System.out.println("Поздравления " + playerNameOnTurn + "! Позна числото в " + countTurns + (countTurns == 1 ? " ход." : " хода."));
-        validateRanking(digits,countTurns,playerNameOnTurn);
+        validateRanking(playerNameOnTurn, countTurns, digits);
         secondMenuChoice(firstPlayerName, secondPlayerName, digits);
     }
 
@@ -294,12 +292,43 @@ public class Main {
             System.out.println("----------------------------------");
             sc.close();
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            System.out.println("Създадена е празна класация.");
+            createRankingFile();
+            printRanking();
         }
         menuChoice();
     }
 
-    public static void validateRanking(int digits, int countTurns, String playerName){
+    public static void createRankingFile() {
+        try {
+            File file = new File("ranking.csv");
+            PrintStream ps = new PrintStream(file, "windows-1251");
+            String[][] ranking = {
+                    {"1", "999", " "},
+                    {"2", "999", " "},
+                    {"3", "999", " "},
+                    {"4", "999", " "},
+                    {"5", "999", " "},
+                    {"6", "999", " "},
+                    {"7", "999", " "},
+                    {"8", "999", " "},
+                    {"9", "999", " "},
+            };
+            for (int k = 0; k < ranking.length; k++) {
+                for (int j = 0; j < ranking[0].length; j++) {
+                    ps.print(ranking[k][j]);
+                    ps.print(";");
+                }
+                ps.println();
+            }
+            ps.close();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+
+    public static void validateRanking(String playerName, int countTurns, int digits) {
         File file = new File("ranking.csv");
         String[][] ranking = new String[9][3];
         int i = 0;
@@ -310,8 +339,14 @@ public class Main {
                 for (int j = 0; j < splitCsv.length; j++) {
                     ranking[i][j] = splitCsv[j];
                 }
-                if (Integer.parseInt(ranking[i][0]) == digits && Integer.parseInt(ranking[i][1]) > countTurns){
-                    System.out.println("Подобрихте предишното най-добро постижение на " + ranking[i][2] + ".");
+                if (Integer.parseInt(ranking[i][0]) == digits && countTurns < Integer.parseInt(ranking[i][1])) {
+                    if (ranking[i][2].equals(" ")){
+                        System.out.println("Поставихте ново постижение!");
+                    } else if (ranking[i][2].equals(playerName)){
+                        System.out.println("Подобрихте най-доброто си постижение.");
+                    }else{
+                        System.out.println("Подобрихте предишното най-добро постижение на " + ranking[i][2] + ".");
+                    }
                     ranking[i][1] = countTurns + "";
                     ranking[i][2] = playerName;
                 }
@@ -328,7 +363,7 @@ public class Main {
             }
             ps.close();
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            System.out.println(e);
         }
     }
 
