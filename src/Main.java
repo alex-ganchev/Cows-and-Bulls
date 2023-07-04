@@ -3,7 +3,6 @@ import java.io.PrintStream;
 import java.util.*;
 import java.io.File;
 
-
 public class Main {
     public static ArrayList<Integer> generateRandomNumber(int digits) {
         Random rnd = new Random();
@@ -112,12 +111,14 @@ public class Main {
 
     public static void menuChoice() {
         Scanner scanner = new Scanner(System.in);
-        System.out.println("---------- МЕНЮ ----------");
-        System.out.println("| 1. Игра с един играч   |");
-        System.out.println("| 2. Игра с двама играчи |");
-        System.out.println("| 3. Класация            |");
-        System.out.println("| 4. Изход               |");
-        System.out.println("--------------------------");
+        System.out.println();
+        System.out.println("     /)  (\\             БИКОВЕ и КРАВИ                   ");
+        System.out.println(".-._((.~~.))_.-,   ~~~~~~~~~ МЕНЮ ~~~~~~~~  .-._.-~~-._.-, ");
+        System.out.println(" '-.   @@   ,-'   1. Игра с един играч      '-.   @@   ,-' ");
+        System.out.println("   / .o--o. \\     2. Игра с двама играчи      / .o--o. \\  ");
+        System.out.println("  ( ( .__. ) )    3. Класация                ( ( .__. ) )  ");
+        System.out.println("   ) '----' (     4. Изход                    ) '----' (  ");
+        System.out.println();
         System.out.print("Вашият избор : ");
         String choice = scanner.next();
         switch (choice) {
@@ -156,10 +157,14 @@ public class Main {
 
     public static void secondMenuChoice(String firstPlayerName, String secondPlayerName, int digits) {
         Scanner scanner = new Scanner(System.in);
-        System.out.println("------ МЕНЮ ------");
-        System.out.println("| 1. Нова игра   |");
-        System.out.println("| 2. Главно меню |");
-        System.out.println("------------------");
+        System.out.println();
+        System.out.println("     /)  (\\             БИКОВЕ и КРАВИ                   ");
+        System.out.println(".-._((.~~.))_.-,   ~~~~~~~~~ МЕНЮ ~~~~~~~~  .-._.-~~-._.-, ");
+        System.out.println(" '-.   @@   ,-'        1. Нова игра         '-.   @@   ,-' ");
+        System.out.println("   / .o--o. \\          2. Главно меню         / .o--o. \\  ");
+        System.out.println("  ( ( .__. ) )                               ( ( .__. ) )  ");
+        System.out.println("   ) '----' (                                 ) '----' (  ");
+        System.out.println();
         System.out.print("Вашият избор : ");
         String choice = scanner.next();
         switch (choice) {
@@ -191,7 +196,7 @@ public class Main {
         int digits = 0;
         String input;
         do {
-            System.out.print("Въведете трудност от 1 до 9 (брой разряди на числото) : ");
+            System.out.print("Въведете трудност от 1 до 9 : ");
             try {
                 input = scanner.nextLine();
                 digits = Integer.parseInt(input);
@@ -233,7 +238,7 @@ public class Main {
                 countTurns++;
             }
         } while (bulls != digits);
-        System.out.println("Поздравления " + playerName + "! Позна числото в " + countTurns + (countTurns == 1 ? " ход." : " хода."));
+        System.out.println("Поздравления " + playerName + "! \nПозна числото в " + countTurns + (countTurns == 1 ? " ход." : " хода."));
         validateRanking(playerName, countTurns, digits);
         secondMenuChoice(playerName, null, digits);
     }
@@ -270,7 +275,7 @@ public class Main {
 
         } while (bulls != digits);
         countTurns = (int) Math.ceil(countTurns / 2.0);
-        System.out.println("Поздравления " + playerNameOnTurn + "! Позна числото в " + countTurns + (countTurns == 1 ? " ход." : " хода."));
+        System.out.println("Поздравления " + playerNameOnTurn + "! \nПозна числото в " + countTurns + (countTurns == 1 ? " ход." : " хода."));
         validateRanking(playerNameOnTurn, countTurns, digits);
         secondMenuChoice(firstPlayerName, secondPlayerName, digits);
     }
@@ -279,21 +284,22 @@ public class Main {
         File file = new File("ranking.csv");
         try {
             Scanner sc = new Scanner(file, "windows-1251");
-            System.out.println("----------------------------------");
-            System.out.println("| Трудност |  Ходове  |   Име    |");
-            System.out.println("----------------------------------");
+            System.out.println("\t\t\t----------------------------------");
+            System.out.println("\t\t\t| Трудност |  Ходове  |   Име    |");
+            System.out.println("\t\t\t----------------------------------");
             while (sc.hasNext()) {
                 String[] splitText = sc.nextLine().split(";");
+                System.out.print("\t\t\t");
                 for (int i = 0; i < splitText.length; i++) {
                     System.out.printf("%-11s", "| " + splitText[i] + " ");
                 }
                 System.out.println("|");
             }
-            System.out.println("----------------------------------");
+            System.out.println("\t\t\t----------------------------------");
             sc.close();
         } catch (Exception e) {
-            System.out.println("Създадена е празна класация.");
             createRankingFile();
+            System.out.println("Създадена е празна класация.");
             printRanking();
         }
         menuChoice();
@@ -362,8 +368,12 @@ public class Main {
                 ps.println();
             }
             ps.close();
+            if (playerName.equals("EasterEgg") && digits == 9){
+                createRankingFile();
+                System.out.println("Класацията е нулирана! :)");
+            }
         } catch (Exception e) {
-            System.out.println(e);
+            System.out.println(e.getMessage());
         }
     }
 
