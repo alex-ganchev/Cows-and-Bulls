@@ -12,39 +12,43 @@ public class Main {
         Random rnd = new Random();
         HashSet<Integer> uniqeNumbers = new HashSet<>();
         while (uniqeNumbers.size() < digits) {
-            uniqeNumbers.add(rnd.nextInt(10));
+            if (digits == 1) {
+                uniqeNumbers.add(rnd.nextInt(9) + 1);
+            } else {
+                uniqeNumbers.add(rnd.nextInt(10));
+            }
         }
-
         ArrayList<Integer> randomNumberList = new ArrayList<>(uniqeNumbers);
         Collections.shuffle(randomNumberList);
         while (randomNumberList.get(0) == 0) {
             Collections.shuffle(randomNumberList);
         }
+        System.out.println(randomNumberList);
 
         return randomNumberList;
     }
 
-    public static boolean validateInput(String inputNumber, int digits) {
+    public static boolean validateInput(String input, int digits) {
         try {
-            Integer.parseInt(inputNumber);
+            Integer.parseInt(input);
         } catch (NumberFormatException e) {
             System.out.println("Моля въведи число.");
 
             return false;
         }
-        if (inputNumber.length() != digits) {
+        if (input.length() != digits) {
             System.out.println("Моля въведи число с " + digits + (digits == 1 ? " цифрa." : " цифри."));
 
             return false;
         }
-        if (inputNumber.charAt(0) == '0') {
+        if (input.charAt(0) == '0') {
             System.out.println("Моля въведи число без водеща 0.");
 
             return false;
         }
-        for (int i = 0; i < inputNumber.length() - 1; i++) {
-            for (int j = i + 1; j < inputNumber.length(); j++) {
-                if (inputNumber.charAt(i) == inputNumber.charAt(j)) {
+        for (int i = 0; i < input.length() - 1; i++) {
+            for (int j = i + 1; j < input.length(); j++) {
+                if (input.charAt(i) == input.charAt(j)) {
                     System.out.println("Моля въведи число с " + digits + " неповтарящи се цифри.");
 
                     return false;
@@ -107,7 +111,7 @@ public class Main {
         System.out.println();
     }
 
-     public static void selectMenu() {
+    public static void selectMenu() {
         Scanner scanner = new Scanner(System.in);
         System.out.println("#-----------------------------------------------------------#");
         System.out.println("|      /)  (\\           БИКОВЕ и КРАВИ                      |");
@@ -142,8 +146,8 @@ public class Main {
             }
             case "4": {
                 System.out.println("#-------------------------- ИЗХОД --------------------------#");
-                System.out.println("\t\t\t\tПроект на Александър Ганчев");
-                System.out.println("\t\t\t\thttps://digitalrazgrad.org/");
+                System.out.println("|               Проект на Александър Ганчев                 |");
+                System.out.println("|               https://digitalrazgrad.org/                 |");
                 System.out.println("#-----------------------------------------------------------#");
                 break;
             }
@@ -198,7 +202,7 @@ public class Main {
         do {
             System.out.print("Въведете трудност от 1 до 9 : ");
             try {
-                input = scanner.nextLine();
+                input = scanner.next();
                 digits = Integer.parseInt(input);
 
                 if (digits < 1 || digits > 9) {
@@ -233,13 +237,12 @@ public class Main {
         int countTurns = 0;
         do {
             System.out.print(playerName + " въведи число: ");
-            String input = scanner.nextLine();
+            String input = scanner.next();
             if (validateInput(input, digits)) {
                 int inputNumber = Integer.parseInt(input);
                 ArrayList<Integer> inputNumberList = convertIntToArrayList(inputNumber);
                 int cows = countCows(inputNumberList, randomNumberList);
                 bulls = countBulls(inputNumberList, randomNumberList);
-                System.out.println("-------------------------------------------------------------");
                 System.out.print(inputNumber + " - ");
                 printCowsAndBulls(cows, bulls);
                 System.out.println("-------------------------------------------------------------");
@@ -293,7 +296,6 @@ public class Main {
                 ArrayList<Integer> inputNumberList = convertIntToArrayList(inputNumber);
                 int cows = countCows(inputNumberList, randomNumberListOnTurn);
                 bulls = countBulls(inputNumberList, randomNumberListOnTurn);
-                System.out.println("-------------------------------------------------------------");
                 System.out.print(inputNumber + " - ");
                 printCowsAndBulls(cows, bulls);
                 System.out.println("-------------------------------------------------------------");
@@ -324,7 +326,7 @@ public class Main {
             System.out.println("|           #-----------#-----------#-----------#           |");
             System.out.println("|           |  Трудност |   Ходове  |    Име    |           |");
             System.out.println("|           #-----------#-----------#-----------#           |");
-            while (sc.hasNext()) {
+            while (sc.hasNextLine()) {
                 String[] splitCsv = sc.nextLine().split(";");
                 System.out.print("|           ");
                 for (int i = 0; i < splitCsv.length; i++) {
@@ -336,7 +338,6 @@ public class Main {
             sc.close();
         } catch (Exception e) {
             createRanking();
-            System.out.println("Създадена е празна класация.");
             printRanking();
         }
         selectMenu();
@@ -376,7 +377,7 @@ public class Main {
         int i = 0;
         try {
             Scanner sc = new Scanner(file, "windows-1251");
-            while (sc.hasNext()) {
+            while (sc.hasNextLine()) {
                 String[] splitCsv = sc.nextLine().split(";");
                 for (int j = 0; j < splitCsv.length; j++) {
                     ranking[i][j] = splitCsv[j];
@@ -396,7 +397,8 @@ public class Main {
             }
             sc.close();
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            createRanking();
+            ranking = validateRanking(playerName, countTurns, digits);
         }
 
         return ranking;
